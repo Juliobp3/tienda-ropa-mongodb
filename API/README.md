@@ -1,7 +1,7 @@
 # API de Tienda de Ropa
 API desarrollada en Python con Flask y MongoDB
 
-## 📡 Documentación de la API
+## Documentación de la API
 
 ### Base URL
 
