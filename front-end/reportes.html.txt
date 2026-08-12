@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Tienda de Ropa</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>📊 Reportes</h1>
+            <div>
+                <a href="index.html" class="btn btn-secondary">🏠 Inicio</a>
+                <a href="prendas.html" class="btn">👕 Prendas</a>
+                <button class="btn btn-success" onclick="recargarReportes()">🔄 Recargar</button>
+            </div>
+        </div>
+
+        <!-- Reporte 1 -->
+        <div class="reporte-section">
+            <h2>1️⃣ Marcas que tienen al menos una venta</h2>
+            <div id="reporteMarcasConVentas">
+                <div class="cargando">⏳ Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Reporte 2 -->
+        <div class="reporte-section">
+            <h2>2️⃣ Prendas vendidas y stock restante</h2>
+            <div id="reporteStockRestante">
+                <div class="cargando">⏳ Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Reporte 3 -->
+        <div class="reporte-section">
+            <h2>3️⃣ Top 5 marcas más vendidas</h2>
+            <div id="reporteTopMarcas">
+                <div class="cargando">⏳ Cargando...</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .reporte-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .reporte-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+    </style>
+
+    <script type="module">
+        import { 
+            cargarMarcasConVentas, 
+            cargarStockRestante, 
+            cargarTopMarcas 
+        } from './js/reportes.js';
+
+        window.recargarReportes = function() {
+            cargarMarcasConVentas();
+            cargarStockRestante();
+            cargarTopMarcas();
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarMarcasConVentas();
+            cargarStockRestante();
+            cargarTopMarcas();
+        });
+    </script>
+</body>
+</html>

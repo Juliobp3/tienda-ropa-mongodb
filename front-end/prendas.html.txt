@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Prendas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <h1>👕 Gestión de Prendas</h1>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="index.html" class="btn btn-secondary">🏠 Inicio</a>
+                <button class="btn btn-success" onclick="abrirModalPrenda()">➕ Nueva Prenda</button>
+            </div>
+        </div>
+        
+        <div id="tablaPrendas">
+            <div class="cargando">⏳ Cargando prendas...</div>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar prenda -->
+    <div id="modalPrenda" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalPrenda()">&times;</span>
+            <h2 id="modalTitulo">Nueva Prenda</h2>
+            <form id="formPrenda" onsubmit="event.preventDefault(); guardarPrenda();">
+                <input type="hidden" id="prendaId">
+                <div class="form-group">
+                    <label for="prendaNombre">Nombre:</label>
+                    <input type="text" id="prendaNombre" required placeholder="Ej: Camiseta Deportiva">
+                </div>
+                <div class="form-group">
+                    <label for="prendaMarca">Marca:</label>
+                    <select id="prendaMarca" required>
+                        <option value="">Selecciona una marca</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="prendaPrecio">Precio (₡):</label>
+                    <input type="number" id="prendaPrecio" required placeholder="Ej: 25000">
+                </div>
+                <div class="form-group">
+                    <label for="prendaStock">Stock:</label>
+                    <input type="number" id="prendaStock" value="0" placeholder="Ej: 50">
+                </div>
+                <div class="form-group">
+                    <label for="prendaTalla">Talla:</label>
+                    <input type="text" id="prendaTalla" placeholder="Ej: M, L, XL, 42">
+                </div>
+                <div class="form-group">
+                    <label for="prendaColor">Color:</label>
+                    <input type="text" id="prendaColor" placeholder="Ej: Rojo, Azul, Negro">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-success">💾 Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalPrenda()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { cargarPrendas, abrirModalPrenda, cerrarModalPrenda, guardarPrenda, eliminarPrendaHandler, editarPrenda } from './js/prendas.js';
+        
+        window.abrirModalPrenda = abrirModalPrenda;
+        window.cerrarModalPrenda = cerrarModalPrenda;
+        window.guardarPrenda = guardarPrenda;
+        window.eliminarPrendaHandler = eliminarPrendaHandler;
+        window.editarPrenda = editarPrenda;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarPrendas();
+        });
+    </script>
+</body>
+</html>

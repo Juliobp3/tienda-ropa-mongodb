@@ -1,0 +1,164 @@
+import { 
+    obtenerPrendas, 
+    crearPrenda, 
+    actualizarPrenda, 
+    eliminarPrenda,
+    obtenerMarcas 
+} from './api.js';
+
+let prendas = [];
+let marcas = [];
+
+export async function cargarPrendas() {
+    const contenedor = document.getElementById('tablaPrendas');
+    
+    try {
+        contenedor.innerHTML = '<div class="cargando">⏳ Cargando prendas...</div>';
+        
+        prendas = await obtenerPrendas();
+        marcas = await obtenerMarcas();
+        
+        mostrarTabla();
+    } catch (error) {
+        contenedor.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+        if (error.message.includes('token')) {
+            setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        }
+    }
+}
+
+function mostrarTabla() {
+    const contenedor = document.getElementById('tablaPrendas');
+    
+    if (prendas.length === 0) {
+        contenedor.innerHTML = '<div class="cargando">📭 No hay prendas registradas</div>';
+        return;
+    }
+
+    let html = `
+        <div class="exito">✅ ${prendas.length} prendas encontradas</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Marca</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Talla</th>
+                    <th>Color</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    prendas.forEach(prenda => {
+        html += `
+            <tr>
+                <td>${prenda._id ? prenda._id.substring(0, 8) + '...' : 'N/A'}</td>
+                <td><strong>${prenda.nombre || 'N/A'}</strong></td>
+                <td>${prenda.marca || 'N/A'}</td>
+                <td>₡${formatearPrecio(prenda.precio)}</td>
+                <td>${prenda.stock || 0}</td>
+                <td>${prenda.talla || 'N/A'}</td>
+                <td>${prenda.color || 'N/A'}</td>
+                <td class="acciones">
+                    <button class="btn btn-warning" onclick="editarPrenda('${prenda._id}')">✏️</button>
+                    <button class="btn btn-danger" onclick="eliminarPrendaHandler('${prenda._id}')">🗑️</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    contenedor.innerHTML = html;
+}
+
+function formatearPrecio(precio) {
+    if (!precio) return '0';
+    return precio.toLocaleString('es-CR');
+}
+
+export function abrirModalPrenda(id = null) {
+    const modal = document.getElementById('modalPrenda');
+    const titulo = document.getElementById('modalTitulo');
+    
+    document.getElementById('formPrenda').reset();
+    document.getElementById('prendaId').value = '';
+    
+    const selectMarca = document.getElementById('prendaMarca');
+    selectMarca.innerHTML = '<option value="">Selecciona una marca</option>';
+    marcas.forEach(marca => {
+        selectMarca.innerHTML += `<option value="${marca.nombre}">${marca.nombre}</option>`;
+    });
+    
+    if (id) {
+        const prenda = prendas.find(p => p._id === id);
+        if (!prenda) return;
+        
+        titulo.textContent = '✏️ Editar Prenda';
+        document.getElementById('prendaId').value = prenda._id;
+        document.getElementById('prendaNombre').value = prenda.nombre || '';
+        document.getElementById('prendaMarca').value = prenda.marca || '';
+        document.getElementById('prendaPrecio').value = prenda.precio || '';
+        document.getElementById('prendaStock').value = prenda.stock || '';
+        document.getElementById('prendaTalla').value = prenda.talla || '';
+        document.getElementById('prendaColor').value = prenda.color || '';
+    } else {
+        titulo.textContent = '➕ Nueva Prenda';
+    }
+    
+    modal.style.display = 'block';
+}
+
+export function cerrarModalPrenda() {
+    document.getElementById('modalPrenda').style.display = 'none';
+}
+
+export async function guardarPrenda() {
+    const id = document.getElementById('prendaId').value;
+    const datos = {
+        nombre: document.getElementById('prendaNombre').value.trim(),
+        marca: document.getElementById('prendaMarca').value,
+        precio: parseFloat(document.getElementById('prendaPrecio').value) || 0,
+        stock: parseInt(document.getElementById('prendaStock').value) || 0,
+        talla: document.getElementById('prendaTalla').value.trim(),
+        color: document.getElementById('prendaColor').value.trim()
+    };
+    
+    try {
+        if (id) {
+            await actualizarPrenda(id, datos);
+            alert('✅ Prenda actualizada exitosamente');
+        } else {
+            await crearPrenda(datos);
+            alert('✅ Prenda creada exitosamente');
+        }
+        
+        cerrarModalPrenda();
+        await cargarPrendas();
+    } catch (error) {
+        alert('❌ Error: ' + error.message);
+    }
+}
+
+export async function eliminarPrendaHandler(id) {
+    if (!confirm('¿Estás seguro de eliminar esta prenda?')) return;
+    
+    try {
+        await eliminarPrenda(id);
+        alert('✅ Prenda eliminada exitosamente');
+        await cargarPrendas();
+    } catch (error) {
+        alert('❌ Error: ' + error.message);
+    }
+}
+
+export function editarPrenda(id) {
+    abrirModalPrenda(id);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarPrendas();
+});

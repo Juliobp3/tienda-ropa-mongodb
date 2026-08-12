@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 500px;">
+        <h1>🔑 Iniciar Sesión</h1>
+        
+        <div id="mensaje" class="error" style="display: none;"></div>
+        
+        <form id="loginForm" onsubmit="event.preventDefault(); iniciarSesion();">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" placeholder="Tu contraseña" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Iniciar Sesión</button>
+        </form>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="index.html" class="btn">⬅ Volver al inicio</a>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+            <p><strong>Credenciales de prueba:</strong></p>
+            <p>Email: juliobp3@email.com</p>
+            <p>Contraseña: juliobp3</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000/api';
+
+        async function iniciarSesion() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const mensaje = document.getElementById('mensaje');
+            
+            mensaje.style.display = 'none';
+            
+            if (!email || !password) {
+                mostrarError('Por favor, completa todos los campos.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/usuarios/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error al iniciar sesión');
+                }
+
+                localStorage.setItem('token', data.token);
+                
+                mostrarExito('✅ Sesión iniciada correctamente. Redirigiendo...');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+
+            } catch (error) {
+                mostrarError(error.message);
+            }
+        }
+
+        function mostrarError(mensaje) {
+            const el = document.getElementById('mensaje');
+            el.textContent = '❌ ' + mensaje;
+            el.style.display = 'block';
+            el.className = 'error';
+        }
+
+        function mostrarExito(mensaje) {
+            const el = document.getElementById('mensaje');
+            el.textContent = mensaje;
+            el.style.display = 'block';
+            el.className = 'exito';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('mensaje').textContent = '⚠️ Ya hay una sesión activa.';
+                document.getElementById('mensaje').style.display = 'block';
+                document.getElementById('mensaje').className = 'exito';
+            }
+        });
+    </script>
+</body>
+</html>
