@@ -1,8 +1,12 @@
-# 🛍️ Tienda de Ropa - Proyecto MongoDB
+# 🛍️ Tienda de Ropa - Proyecto Final
 
 ## 📋 Descripción del Proyecto
 
-Este proyecto implementa una base de datos **NoSQL** para una **tienda de ropa** utilizando **MongoDB Atlas** en la nube y **MongoDB Compass** como interfaz gráfica.
+Este proyecto implementa un sistema completo para una **tienda de ropa** que incluye:
+
+- **Base de datos NoSQL** en MongoDB Atlas
+- **API REST** en Python con Flask
+- **Front-end** con HTML, CSS y JavaScript (AJAX)
 
 La base de datos gestiona:
 - 👤 **Usuarios** - Clientes de la tienda
@@ -10,12 +14,22 @@ La base de datos gestiona:
 - 👕 **Prendas** - Productos disponibles
 - 💰 **Ventas** - Registro de transacciones
 
-## 🗄️ Estructura de la Base de Datos
+## 📁 Estructura del Repositorio
+
+tienda-ropa-mongodb/
+API/ # API en Python con Flask
+front-end/ # Interfaz de usuario
+scripts/ # Scripts de base de datos
+database/ # Operaciones de base de datos
+README.md # Documentación principal
+
+
+## Estructura de la Base de Datos
 
 **Base de datos:** `tienda_ropa`
 
 ### Colección: `usuarios`
-```json
+
 [
   {
     "nombre": "Ana García",
@@ -38,7 +52,7 @@ La base de datos gestiona:
   }
 ]
 
-Colección: marcas
+marcas
 
 [
   {
@@ -68,7 +82,7 @@ Colección: marcas
   }
 ]
 
-Colección: prendas
+prendas
 
 [
   {
@@ -129,7 +143,7 @@ Colección: prendas
   }
 ]
 
-Colección: ventas
+ventas
 
 [
   {
@@ -182,3 +196,107 @@ Colección: ventas
     "usuario": "María Rodríguez"
   }
 ]
+
+API
+Tecnologías
+Python 3.x
+
+Flask - Framework web
+
+PyMongo - Conector MongoDB
+
+JWT - Autenticación
+
+Instalación y Ejecución
+Clonar el repositorio
+
+Navegar a la carpeta API/
+
+Crear entorno virtual:
+
+python -m venv venv
+venv\Scripts\activate     # Windows
+# o
+source venv/bin/activate  # Linux/Mac
+
+Instalar dependencias:
+
+pip install -r requirements.txt
+
+Crear archivo .env:
+
+MONGO_URI=mongodb+srv://<usuario>:<contraseña>@...
+DB_NAME=tienda_ropa
+JWT_SECRET=tu_clave_secreta
+PORT=5000
+
+Ejecutar la API:
+
+python run.py
+
+Documentación Interactiva
+La API incluye documentación Swagger disponible en:
+
+http://localhost:5000/apidocs
+
+Front-end
+Tecnologías
+HTML5
+
+CSS3
+
+JavaScript (Vanilla JS con AJAX)
+
+Páginas
+Página	Descripción
+index.html: Página principal con menú y autenticación
+login.html: Inicio de sesión para obtener token
+prendas.html: CRUD completo de prendas
+reportes.html: Visualización de 3 reportes
+
+Funcionalidades
+Autenticación
+
+Login con email y contraseña
+
+Almacenamiento del token en localStorage
+
+Cierre de sesión
+
+Gestión de Prendas
+
+Listar todas las prendas
+
+Crear nueva prenda (modal)
+
+Editar prenda existente (modal)
+
+Eliminar prenda (confirmación)
+
+Reportes
+
+Marcas que tienen al menos una venta
+
+Prendas vendidas y stock restante
+
+Top 5 marcas más vendidas
+
+Cómo usar el Front-end
+Abrir index.html en el navegador
+
+Ir a "Iniciar Sesión"
+
+Ingresar credenciales de prueba:
+
+Email: juliobp3@email.com
+
+Password: juliobp3
+
+Explorar las funciones del menú
+
+Requisitos para el Front-end
+La API debe estar corriendo en http://127.0.0.1:5000
+
+El token se guarda automáticamente en el navegador
+
+Todas las peticiones usan AJAX con fetch()
