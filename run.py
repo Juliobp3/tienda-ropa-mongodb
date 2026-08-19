@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory  # Agregar send_from_directory
 from flask_cors import CORS
 from flasgger import Swagger
 from dotenv import load_dotenv
@@ -12,7 +12,7 @@ from api.routes.prenda_routes import prenda_bp
 from api.routes.venta_routes import venta_bp
 from api.routes.reportes_routes import reportes_bp
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')  # Agregar static_folder
 CORS(app)
 
 app.config['SWAGGER'] = {
@@ -31,7 +31,7 @@ app.register_blueprint(reportes_bp, url_prefix='/api/reportes')
 @app.route('/')
 def index():
     return jsonify({
-        'mensaje': '🚀 API de Tienda de Ropa funcionando',
+        'mensaje': 'API de Tienda de Ropa funcionando',
         'version': '1.0.0',
         'endpoints': {
             'usuarios': '/api/usuarios',
@@ -40,8 +40,14 @@ def index():
             'ventas': '/api/ventas',
             'reportes': '/api/reportes'
         },
-        'documentacion': '/apidocs'
+        'documentacion': '/apidocs',
+        'frontend': '/listado.html'  # NUEVO: acceso al HTML
     })
+
+# NUEVA RUTA: Servir el archivo HTML
+@app.route('/listado.html')
+def servir_listado():
+    return send_from_directory('static', 'listado.html')
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
