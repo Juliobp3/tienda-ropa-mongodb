@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Prendas - Tienda de Ropa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #3f3f3f;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .contenedor {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgb(208, 219, 225);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .cargando {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #666;
+        }
+        .error {
+            background-color: #ff0000;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .exito {
+            background-color: #51cf66;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .boton-cargar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .boton-cargar:hover {
+            background-color: #1a252f;
+        }
+        .token-info {
+            background-color: #4e7680;
+            border: 1px solid #22458f;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .token-info input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Listado de Prendas</h1>
+        
+        <div class="token-info">
+            <label for="tokenInput"><strong>Token de Autenticación:</strong></label>
+            <input type="text" id="tokenInput" placeholder="Pega tu token aquí">
+            <br><br>
+            <button class="boton-cargar" onclick="cargarPrendas()">Cargar Prendas</button>
+        </div>
+        
+        <div id="resultado">
+            <div class="cargando">Ingresa el token y haz clic en "Cargar Prendas"</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000/api/prendas';
+        
+        function cargarPrendas() {
+            const token = document.getElementById('tokenInput').value.trim();
+            
+            if (!token) {
+                mostrarError('Por favor, ingresa tu token de autenticación.');
+                return;
+            }
+            
+            mostrarCargando();
+            
+            fetch(API_URL, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Token inválido o expirado. Por favor, obtén un nuevo token.');
+                    } else if (response.status === 404) {
+                        throw new Error('Endpoint no encontrado. Verifica la URL.');
+                    } else {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.data || data.data.length === 0) {
+                    mostrarError('No hay prendas registradas en la base de datos.');
+                    return;
+                }
+                mostrarTabla(data.data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarError(error.message);
+            });
+        }
+        
+        function mostrarTabla(prendas) {
+            const contenedor = document.getElementById('resultado');
+            
+            let html = `
+                <div class="exito"> ${prendas.length} prendas encontradas</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Marca</th>
+                            <th>Precio (₡)</th>
+                            <th>Stock</th>
+                            <th>Talla</th>
+                            <th>Color</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            prendas.forEach(prenda => {
+                html += `
+                    <tr>
+                        <td>${prenda._id ? prenda._id.substring(0, 8) + '...' : 'N/A'}</td>
+                        <td><strong>${prenda.nombre || 'N/A'}</strong></td>
+                        <td>${prenda.marca || 'N/A'}</td>
+                        <td>${formatearPrecio(prenda.precio)}</td>
+                        <td>${prenda.stock || 0}</td>
+                        <td>${prenda.talla || 'N/A'}</td>
+                        <td>${prenda.color || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            contenedor.innerHTML = html;
+        }
+        
+        function mostrarCargando() {
+            document.getElementById('resultado').innerHTML = `
+                <div class="cargando">Cargando prendas... Por favor espera.</div>
+            `;
+        }
+        
+        function mostrarError(mensaje) {
+            document.getElementById('resultado').innerHTML = `
+                <div class="error">${mensaje}</div>
+            `;
+        }
+        
+        function formatearPrecio(precio) {
+            if (!precio) return '₡0';
+            return '₡' + precio.toLocaleString('es-CR');
+        }
+        
+        document.getElementById('tokenInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                cargarPrendas();
+            }
+        });
+        
+        console.log('Página de listado de prendas cargada correctamente.');
+        console.log('API URL:', API_URL);
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Ropa - Inicio</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Tienda de Ropa</h1>
+        
+        <!-- Sección de autenticación -->
+        <div class="auth-section">
+            <h2>🔑 Autenticación</h2>
+            <div id="authStatus">
+                <p>Por favor, inicia sesión para acceder a las funciones.</p>
+            </div>
+            <div class="auth-form">
+                <a href="login.html" class="btn btn-primary">Iniciar Sesión</a>
+                <button class="btn btn-danger" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- Menú principal -->
+        <div class="menu">
+            <h2>📋 Menú Principal</h2>
+            <div class="menu-buttons">
+                <a href="prendas.html" class="btn">👕 Gestionar Prendas</a>
+                <a href="reportes.html" class="btn">📊 Ver Reportes</a>
+            </div>
+        </div>
+
+        <!-- Información del token -->
+        <div id="tokenInfo" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 5px;">
+            <p><strong>Token:</strong> <span id="tokenDisplay">No hay token</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Verificar si hay token guardado
+        function verificarToken() {
+            const token = localStorage.getItem('token');
+            const tokenDisplay = document.getElementById('tokenDisplay');
+            
+            if (token) {
+                tokenDisplay.textContent = token.substring(0, 30) + '...';
+                document.getElementById('authStatus').innerHTML = '<p style="color: green;">✅ Sesión iniciada correctamente</p>';
+            } else {
+                tokenDisplay.textContent = 'No hay token';
+                document.getElementById('authStatus').innerHTML = '<p style="color: orange;">⚠️ No has iniciado sesión</p>';
+            }
+        }
+
+        // Cerrar sesión
+        function cerrarSesion() {
+            localStorage.removeItem('token');
+            alert('Sesión cerrada correctamente');
+            verificarToken();
+        }
+
+        // Verificar token al cargar la página
+        document.addEventListener('DOMContentLoaded', verificarToken);
+    </script>
+</body>
+</html>
